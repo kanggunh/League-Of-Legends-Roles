@@ -6,7 +6,7 @@
 
 In this short website, I would like to build a model that predict which role a player plated given their post-game data.
 
-We will be using a csv file provided bt Oracle's Elixir. The dataset we are about to explore contain match data from LCS, LEC, LCK, and more from 2022. Previously, we worked on our exploratory data analysis on this dataset can be found [here](https://kanggun-ucsd.github.io/LeagueOfLegends/)
+We will be using a csv file provided bt Oracle's Elixir. The dataset we are about to explore contain match data from LCS, LEC, LCK, and more from 2022. Previously, we worked on our exploratory data analysis on this dataset can be found [here](https://kanggun-ucsd.github.io/LeagueOfLegends/).
 
 
 There are 5 roles in this game, which are Top-lane, jungle, support, mid-lane, bot-lane. We want to predict one of these five using post-game data. Accordingly, we need to build a classifier that performs multiclass classification. 
@@ -38,25 +38,16 @@ For our final model, we are going to use 8 features, with 4 of then binarized. W
 
 We have 8 quantitative post-game data with our cleaned data. It includes kill, death, assists, visionscore, earned gpm, wardsplaced, monsterkills.
 
-### Why choose these features?
 
 Here is the general idea for why we chose these features.
-
-**'kill':** the team plays to give certain roles (laners or jungle) more kill as a strategy
-
-**'death':** some roles are more prone to being killed than others
-
-**'assists':** roles such as support might have higher number of assists
-
-**'visionscore':** jungle and support tend to have higher vision score, which may help
-
-**'earned gpm':** certain roles earned more gold than others
-
-**'wardsplaced':** support tends to place more wards. might be good predictor
-
-**'monsterkills':** jungle usually takes all monsters and support almost never takes any
-
-**'damagetakenperminute':** usually top-laners can take the most damage, resulting in higher damage taken per minute, and bot-laners usually take significant less
+>**'kill':** the team plays to give certain roles (laners or jungle) more kill as a strategy
+>**'death':** some roles are more prone to being killed than others
+>**'assists':** roles such as support might have higher number of assists
+>**'visionscore':** jungle and support tend to have higher vision score, which may help
+>**'earned gpm':** certain roles earned more gold than others
+>**'wardsplaced':** support tends to place more wards. might be good predictor
+>**'monsterkills':** jungle usually takes all monsters and support almost never takes any
+>**'damagetakenperminute':** usually top-laners can take the most damage, resulting in higher damage taken per minute, and bot-laners usually take significant less
 
 ### Modeling Pipeline
 We kept the two features from the baseline model binarized. Then we chose to binarize two more features, 'earned gpm' and 'visionscore'. These two was specifcally binarized so that it accounts for different stats that are more relevent to the roles we want to predict. The rest of the features were passed as is. 
