@@ -63,7 +63,8 @@ For this final model, we wanted to figure out the best hyperparameters of this m
 
 This resulted in the following hyperparameter.
 
-*col_transformer = ColumnTransformer(
+```
+col_transformer = ColumnTransformer(
     transformers=[
         ('dmgtkn', Binarizer(threshold=568), ['damagetakenperminute']),
         ('wrds', Binarizer(threshold=21), ['wardsplaced']),
@@ -75,7 +76,8 @@ This resulted in the following hyperparameter.
 pl_final = Pipeline([
     ('col_transformer', col_transformer),
     ('tree', DecisionTreeClassifier(max_depth=8, criterion='gini'))
-])*
+])
+```
 
 ---
 ## **Fairness Analysis**
