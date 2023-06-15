@@ -33,6 +33,8 @@ We have 8 quantitative post-game data with our cleaned data. It includes kill, d
 
 ### Why choose these features?
 
+Here is the general idea for why we chose these features.
+
 **'kill':** the team plays to give certain roles (laners or jungle) more kill as a strategy
 
 **'death':** some roles are more prone to being killed than others
@@ -49,11 +51,36 @@ We have 8 quantitative post-game data with our cleaned data. It includes kill, d
 
 **'damagetakenperminute':** usually top-laners can take the most damage, resulting in higher damage taken per minute, and bot-laners usually take significant less
 
+### Modeling Pipeline
+We kept the two features from the baseline model binarized. Then we chose to binarize two more features, 'earned gpm' and 'visionscore'. These two was specifcally binarized so that it accounts for different stats that are more relevent to the roles we want to predict. The rest of the features were passed as is. 
+
+For this final model, we wanted to figure out the best hyperparameters of this model. We used GridSearchCV from sklearn to do this. Our hyperparameters were the threshold of each individual Binarizer,'max_depth' of the decision tree, and 'criterion' of the decision tree. We found it taking too long if we put lot of values in this grid search since we have 6 hyperparameters and 5 folds to go through. In order to address this time issue, we chose the list values for threshold based on the mean of each feature. We experimented in increments to allow GridSearch to run on our jupyter notebook within a reasonable amount of time.
+
+This resulted in the following hyperparameter.
 
 
 ---
 ## Fairness Analysis
+For our fairness analysis, we decided to look at 'monsterkills'. We manually created these groups by binarizing the 'monsterkills' columns in our dataset, using the Binarizer transformer with a threshold of 100.
 
+The two groups are the following:
+- "monster-killer", player who has more than 100 'monsterkills'
+- "non-monster-kills", plater who has less than or equal to 100 'monsterkills'
+
+For our evaluation, we will choose accuracy since the number of roles are equal to one another like mentioned previously.
+
+Now, we wil perform a permutation test to see if the difference in accuracy is significant.
+
+- Null Hypothesis: The classifier's accuracy is the same for both monster-killer and non-monster-killer, and any differences are due to chance.
+
+- Alternative Hypothesis: The classifier's accuracy is higher for players who are monster-killer.
+
+- Test statistic: Difference in accuracy (monster-killer minus non-monster-killer)
+
+- Significance level: 0.01
+
+The resulting p-value of 0.0 is less than the significance leven of 0.01.
+Therefore, we reject the null hypothesis.
 
 ---
 
