@@ -1,6 +1,5 @@
 
 
-# Predicting Roles with post-game Data
 ---
 
 ## **Framing the Problem**
@@ -20,7 +19,7 @@ At the time of prediction, we would not know the champion that the player select
 ## **Baseline Model**
 For the baseline model, the classifier we chose a decision tree classifier with two features.
 
-We first chose 'damagetaken' as our first feature. This feature tells us about the amount of damage a player can take on average depending on their role. Typically 'top-lane', and 'jungle' players play more tankier champions. The other two, 'bot' and 'mid', tend to have less health. We binarized this feature with a threshold of 590. This threshold was chosen in an attempt to classifier 'top-lane' and 'jungle' as the tankier roles and others as less tankier. This was done after evalutaing the mean 'damagetakenperminute' by position.
+We first chose 'damagetaken' as our first feature. This feature tells us about the amount of damage a player can take on average depending on their role. Typically 'top-lane', and 'jungle' players play more tankier champions. The other two, 'bot' and 'mid', tend to have less health. We binarized this feature with a threshold of 590. This threshold was chosen in an attempt to classifier 'top-lane' and 'jungle' as the tankier roles and others as less tankier. This threshold was chosen after evalutaing the mean 'damagetakenperminute' by position.
 
 Then the second feature we chose was wardsplaced. One of many things that support do is to focus on placing wards. We thought that this would help our model to predict supports. We binarized both of these features with their own threshold. Threshold for this was 21 respectively. Similar to the previous feature, this was based on the computed mean by roles, in an attempt to identify support from the data.
 
@@ -52,21 +51,14 @@ Because there is only 10 rows of missing values out of 124500 rows, we will use 
 
 
 Here is the general idea for why we chose these features.
->**'kill':** the team plays to give certain roles (laners or jungle) more kill as a strategy
-
->**'death':** some roles are more prone to being killed than others
-
->**'assists':** roles such as support might have higher number of assists
-
->**'visionscore':** jungle and support tend to have higher vision score, which may help
-
->**'earned gpm':** certain roles earned more gold than others
-
->**'wardsplaced':** support tends to place more wards. might be good predictor
-
->**'monsterkills':** jungle usually takes all monsters and support almost never takes any
-
->**'damagetakenperminute':** usually top-laners can take the most damage, resulting in higher damage taken per minute, and bot-laners usually take significant less
+- **'kill':** the team plays to give certain roles (laners or jungle) more kill as a strategy
+- **'death':** some roles are more prone to being killed than others
+- **'assists':** roles such as support might have higher number of assists
+- **'visionscore':** jungle and support tend to have higher vision score, which may help
+- **'earned gpm':** certain roles earned more gold than others
+- **'wardsplaced':** support tends to place more wards. might be good predictor
+- **'monsterkills':** jungle usually takes all monsters and support almost never takes any
+- **'damagetakenperminute':** usually top-laners can take the most damage, resulting in higher damage taken per minute, and bot-laners usually take significant less
 
 ### Modeling Pipeline
 We kept the two features from the baseline model binarized. Then we chose to binarize two more features, 'earned gpm' and 'visionscore'. These two was specifcally binarized so that it accounts for different stats that are more relevent to the roles we want to predict. The rest of the features were passed as is. 
