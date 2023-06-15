@@ -1,4 +1,4 @@
-# League-Of-Legends-Roles
+# Predicting Roles with post-game stats
 
 ---
 ## Framing the Problem
@@ -22,6 +22,20 @@ For the baseline model, the classifier we chose a decision tree classifier with 
 We first chose 'damagetaken' as our first feature. This feature tells us about the amount of damage a player can take on average depending on their role. Typically 'top-lane', and 'jungle' players play more tankier champions. The other two, 'bot' and 'mid', tend to have less health. We binarized this feature with a threshold of 590. This threshold was chosen in an attempt to classifier 'top-lane' and 'jungle' as the tankier roles and others as less tankier. This was done after evalutaing the mean 'damagetakenperminute' by position.
 
 Then the second feature we chose was wardsplaced. One of many things that support do is to focus on placing wards. We thought that this would help our model to predict supports. We binarized both of these features with their own threshold. Threshold for this was 21 respectively. Similar to the previous feature, this was based on the computed mean by roles, in an attempt to identify support from the data.
+
+`
+baseline_col_transformer = ColumnTransformer(
+    transformers=[
+        ('damagetaken', Binarizer(threshold=590), ['damagetakenperminute']),
+        ('wardsplaced', Binarizer(threshold=21), ['wardsplaced'])
+        ],
+        remainder='drop'
+        )
+pl_base = Pipeline([
+    ('col_transformer', baseline_col_transformer),
+    ('tree', DecisionTreeClassifier(max_depth=8))
+])
+`
 
 Our accuracy on the training set was 53.61%. The training set had a accuracy of 53.29%. For a baseline model with only two features, the baseline model is decent at doing its job. Since the roles are distrubuted evenly, if the model predicts only one role, the accuracy would be 20%. With this model having only two feature that are more focused on three of the roles, a over 50% accuracy is not too bad for a baseline model. The similar accuracy shows that the model is generalizable. 
 
@@ -58,6 +72,21 @@ For this final model, we wanted to figure out the best hyperparameters of this m
 
 This resulted in the following hyperparameter.
 
+`
+col_transformer = ColumnTransformer(
+    transformers=[
+        ('dmgtkn', Binarizer(threshold=568), ['damagetakenperminute']),
+        ('wrds', Binarizer(threshold=21), ['wardsplaced']),
+        ('earnedgpm', Binarizer(threshold=232), ['earned gpm']),
+        ('vscore', Binarizer(threshold=23), ['visionscore'])
+        ],
+        remainder='passthrough'
+        )
+pl_final = Pipeline([
+    ('col_transformer', col_transformer),
+    ('tree', DecisionTreeClassifier(max_depth=8, criterion='gini'))
+])
+`
 
 ---
 ## Fairness Analysis
