@@ -1,8 +1,8 @@
-# Predicting Roles with post-game stats
+# **Predicting Roles with post-game stats**
 
 ---
 
-## Framing the Problem
+## **Framing the Problem**
 
 In this short website, I would like to build a model that predict which role a player plated given their post-game data.
 
@@ -16,7 +16,7 @@ For evaluating our model, we will be using accuracy test. Since we have 5 roles 
 At the time of prediction, we would not know the champion that the player selected since lot of the champions has the designated role. We would only have stats such as kills, death, assist, etc. to predict what role the player played.
 
 
-#### Assessment of Missingness
+### Assessment of Missingness
 When assessing the missingness of our cleaned data with the columns that we need, we are able to see that we have 10 missing values for the columns 'visionscore', 'monsterkills', and 'damagetakenperminute'. These values occurs on the same game. If we look at the match with gameid **8479-8479_game_1**, we are able to see that all of the missing values are from the 10 players of this match. Therefore, without doing any missingness permutation test for this on this data set, we are able to conclude that it is missing at random.
 
 Because there is only 10 rows of missing values out of 124500 rows, we will use mean imputation to fill the missing values. This will preserved the mean of the observed data.
@@ -62,6 +62,20 @@ We kept the two features from the baseline model binarized. Then we chose to bin
 For this final model, we wanted to figure out the best hyperparameters of this model. We used GridSearchCV from sklearn to do this. Our hyperparameters were the threshold of each individual Binarizer,'max_depth' of the decision tree, and 'criterion' of the decision tree. We found it taking too long if we put lot of values in this grid search since we have 6 hyperparameters and 5 folds to go through. In order to address this time issue, we chose the list values for threshold based on the mean of each feature. We experimented in increments to allow GridSearch to run on our jupyter notebook within a reasonable amount of time.
 
 This resulted in the following hyperparameter.
+
+*col_transformer = ColumnTransformer(
+    transformers=[
+        ('dmgtkn', Binarizer(threshold=568), ['damagetakenperminute']),
+        ('wrds', Binarizer(threshold=21), ['wardsplaced']),
+        ('earnedgpm', Binarizer(threshold=232), ['earned gpm']),
+        ('vscore', Binarizer(threshold=23), ['visionscore'])
+        ],
+        remainder='passthrough'
+        )
+pl_final = Pipeline([
+    ('col_transformer', col_transformer),
+    ('tree', DecisionTreeClassifier(max_depth=8, criterion='gini'))
+])*
 
 ---
 ## **Fairness Analysis**
