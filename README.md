@@ -41,12 +41,19 @@ We have 8 quantitative post-game data with our cleaned data. It includes kill, d
 
 Here is the general idea for why we chose these features.
 >**'kill':** the team plays to give certain roles (laners or jungle) more kill as a strategy
+
 >**'death':** some roles are more prone to being killed than others
+
 >**'assists':** roles such as support might have higher number of assists
+
 >**'visionscore':** jungle and support tend to have higher vision score, which may help
+
 >**'earned gpm':** certain roles earned more gold than others
+
 >**'wardsplaced':** support tends to place more wards. might be good predictor
+
 >**'monsterkills':** jungle usually takes all monsters and support almost never takes any
+
 >**'damagetakenperminute':** usually top-laners can take the most damage, resulting in higher damage taken per minute, and bot-laners usually take significant less
 
 ### Modeling Pipeline
