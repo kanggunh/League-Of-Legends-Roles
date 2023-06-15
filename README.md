@@ -22,7 +22,7 @@ When assessing the missingness of our cleaned data with the columns that we need
 Because there is only 10 rows of missing values out of 124500 rows, we will use mean imputation to fill the missing values. This will preserved the mean of the observed data.
 
 ---
-## Baseline Model
+## **Baseline Model**
 For the baseline model, the classifier we chose a decision tree classifier with two features.
 
 We first chose 'damagetaken' as our first feature. This feature tells us about the amount of damage a player can take on average depending on their role. Typically 'top-lane', and 'jungle' players play more tankier champions. The other two, 'bot' and 'mid', tend to have less health. We binarized this feature with a threshold of 590. This threshold was chosen in an attempt to classifier 'top-lane' and 'jungle' as the tankier roles and others as less tankier. This was done after evalutaing the mean 'damagetakenperminute' by position.
@@ -33,7 +33,7 @@ Then the second feature we chose was wardsplaced. One of many things that suppor
 Our accuracy on the training set was 53.61%. The training set had a accuracy of 53.29%. For a baseline model with only two features, the baseline model is decent at doing its job. Since the roles are distrubuted evenly, if the model predicts only one role, the accuracy would be 20%. With this model having only two feature that are more focused on three of the roles, a over 50% accuracy is not too bad for a baseline model. The similar accuracy shows that the model is generalizable. 
 
 ---
-## Final Model
+## **Final Model**
 For our final model, we are going to use 8 features, with 4 of then binarized. We will be using a decision tree classifier like before.
 
 We have 8 quantitative post-game data with our cleaned data. It includes kill, death, assists, visionscore, earned gpm, wardsplaced, monsterkills.
@@ -64,7 +64,7 @@ For this final model, we wanted to figure out the best hyperparameters of this m
 This resulted in the following hyperparameter.
 
 ---
-## Fairness Analysis
+## **Fairness Analysis**
 For our fairness analysis, we decided to look at 'monsterkills'. We manually created these groups by binarizing the 'monsterkills' columns in our dataset, using the Binarizer transformer with a threshold of 100.
 
 The two groups are the following:
