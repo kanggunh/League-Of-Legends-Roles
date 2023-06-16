@@ -1,4 +1,5 @@
 
+---
 
 # **Framing the Problem**
 
@@ -15,7 +16,7 @@ At the time of prediction, we would not know the champion that the player select
 ---
 
 # **Baseline Model**
-For the baseline model, the classifier we chose a decision tree classifier with two features.
+For the baseline model, the classifier we chose a decision tree classifier with two quantitative features. We do not have any ordinal or nominal features.
 
 We first chose 'damagetaken' as our first feature. This feature tells us about the amount of damage a player can take on average depending on their role. Typically top-lane, and jungle players play more tankier champions. The other two, bot-lane and mid-lane, tend to have less health. We binarized this feature with a threshold of 590. This threshold was chosen in an attempt to classifier top-lane and jungle as the tankier roles and others as less tankier. This threshold was chosen after evalutaing the mean 'damagetakenperminute' by position.
 
@@ -35,11 +36,11 @@ pl_base = Pipeline([
 ])
 ```
 
-Our accuracy on the training set was 53.61%. The training set had a accuracy of 53.29%. First thing we notice is that the similar accuracy shows that the model is not overfitting. For a baseline model with only two features, the model does a decent job predicing the roles. If the model predicts only one role, the accuracy would be 20%. With this model having only two features, an accuracy little over 50% is not too bad for a baseline model.
+Our accuracy on the training set was about 53.61%. The training set had a accuracy of about 53.29%. First thing we notice is that the similar accuracy shows that the model is not overfitting. For a baseline model with only two features, the model does a decent job predicing the roles. If the model predicts only one role, the accuracy would be 20%. With this model having only two features, an accuracy little over 50% is not too bad for a baseline model.
 
 ---
 # **Final Model**
-For our final model, we are going to use 8 quantitative features and transform 4 of them. We will be using a decision tree classifier like before.
+For our final model, we are going to use 8 quantitative features and transform 4 of them. We will be using a decision tree classifier like before. We do not have any ordinal or nominal features.
 
 Here is the general idea for why we chose these features.
 - **'kill':** the team plays to give certain roles (laners or jungle) more kill as a strategy
@@ -56,18 +57,18 @@ With these features introduced, we made sure that there was no missing values. W
 ### **Modeling Pipeline**
 We kept the two features from the baseline model binarized. Then we chose to binarize two more features, 'earned gpm' and 'visionscore'. These two was specifcally binarized so that it accounts for different stats that are more relevent to the roles we want to predict. The rest of the features were passed as is. 
 
-For this final model, we wanted to figure out the best hyperparameters of this model. We used GridSearchCV from sklearn to do this. Our hyperparameters were the 'threshold' of each individual Binarizer,'max_depth' of the decision tree, and 'criterion' of the decision tree. 
+For this final model, we kept our modeling algorithm the same as before. We are going to use decision tree classifier. However this time we wanted to figure out the best hyperparameters of this model. We used GridSearchCV from sklearn to do this. Our hyperparameters were the 'threshold' of each individual Binarizer,'max_depth' of the decision tree, and 'criterion' of the decision tree. 
 
-This process had some limitation for us with computing power on Jupyter Notebook. Since we have 6 hyperparameters and 5 folds to go through, it was taking too long if we put lot of values in this grid search. In order to address this run time issue, we chose the list values for threshold based on the mean of each feature. We experimented in increments to allow GridSearch to run on our jupyter notebook within a reasonable amount of time.
+This process had some limitation for us with computing power on Jupyter Notebook. Since we have 6 hyperparameters and 5 folds to go through, it was taking too long if we put lot of values in this grid search. In order to address this run time issue, we chose the list values for threshold based on the mean of each feature. We experimented in increments (different intervals in increments) to allow GridSearch to run on our jupyter notebook within a reasonable amount of time.
 
-Here is the final model pipeline with the hyperparmeter we found through gridsearch.
+Here is the final model pipeline with the hyperparameter we found through gridsearch.
 ```
 col_transformer = ColumnTransformer(
     transformers=[
         ('dmgtkn', Binarizer(threshold=568), ['damagetakenperminute']),
-        ('wrds', Binarizer(threshold=21), ['wardsplaced']),
-        ('earnedgpm', Binarizer(threshold=232), ['earned gpm']),
-        ('vscore', Binarizer(threshold=23), ['visionscore'])
+        ('wrds', Binarizer(threshold=19), ['wardsplaced']),
+        ('earnedgpm', Binarizer(threshold=231), ['earned gpm']),
+        ('vscore', Binarizer(threshold=24), ['visionscore'])
         ],
         remainder='passthrough'
         )
@@ -76,9 +77,9 @@ pl_final = Pipeline([
     ('tree', DecisionTreeClassifier(max_depth=8, criterion='gini'))
 ])
 ```
-The accuracy of this model on training set and testing set was 74.37% and 73.41% respectively. These accuracy of the two sets once again show that our model is not overfitting. The inclusion of new features in this final model improved the accuracy by about 20%. 
+The accuracy of this model on training set and testing set was about 74.63% and 73.98% respectively. These accuracy of the two sets once again show that our model is not overfitting. We are able to generalize on unseen data. The inclusion of new features in this final model improved the accuracy by about 20%. 
 
-We believe that this improved the performance of our model because there were more features that all the roles can rely on. The baseline model only focused on features that was more focused towards top-laners and support. This neglected the other roles. However, this final model includes other features that include all the other roles. For example, the feature 'earned gpm' helped to classify bot-laners since they tend to spend more time collecting gold during the game.
+We believe that our new features improved the performance of our model because they included the more characteristics of individual roles. The baseline model only focused on features that was more focused towards top-laners and support. This neglected the other roles. However, this final model includes other features that include all the other roles. For example, the feature 'earned gpm' helped to classify bot-laners since they tend to spend more time collecting gold during the game.
 
 ---
 # **Fairness Analysis**
@@ -86,17 +87,17 @@ For our fairness analysis, we decided to look at 'monsterkills'. We manually cre
 
 The two groups are the following:
 - "monster-killer", player who has more than 100 'monsterkills'
-- "non-monster-kills", plater who has less than or equal to 100 'monsterkills'
+- "non-monster-killer", plater who has less than or equal to 100 'monsterkills'
 
-For our evaluation, we will choose accuracy since the number of roles are equal to one another like mentioned previously.
+For our evaluation, we will choose accuracy since the number of roles are equal to one another like mentioned previously. Computing the accuracy in each group, we get that 'monster-killer' gets an accuracy of 99.87% and 'non-monster-killer' get accuracy of 68.47%.
 
-Now, we wil perform a permutation test to see if the difference in accuracy is significant.
+We then performed a permutation test to see if the difference in accuracy is significant.
 - Null Hypothesis: The classifier's accuracy is the same for both monster-killer and non-monster-killer, and any differences are due to chance.
 - Alternative Hypothesis: The classifier's accuracy is higher for players who are monster-killer.
 - Test statistic: Difference in accuracy (monster-killer minus non-monster-killer)
 - Significance level: 0.01
 
-The resulting p-value of 0.0 is less than the significance leven of 0.01.
+The resulting p-value of 0.0 is less than the significance level of 0.01.
 Therefore, we reject the null hypothesis.
 
 ---
