@@ -6,7 +6,7 @@
 In this short website, I would like to build a classification model that predict which role a player plated given their post-game data.
 
 
-We will be using a csv file provided bt Oracle's Elixir. The dataset we are about to explore contain match data from LCS, LEC, LCK, and more from 2022. Previously, we worked on our exploratory data analysis on this dataset which can be found in the following link:[https://kanggunh.github.io/LeagueOfLegends/](https://kanggunh.github.io/LeagueOfLegends/)
+We will be using a csv file provided bt Oracle's Elixir. The dataset we are about to explore contain match data from LCS, LEC, LCK, and more from 2022. Previously, we worked on our exploratory data analysis on this dataset which can be found in the following link: [https://kanggunh.github.io/LeagueOfLegends/](https://kanggunh.github.io/LeagueOfLegends/)
 
 There are 5 roles in this game, which are top-lane, jungle, support, mid-lane, bot-lane. We want to predict one of these five using post-game data. Accordingly, we need to build a classifier that performs multiclass classification. 
 
