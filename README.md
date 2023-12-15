@@ -3,16 +3,16 @@
 
 # **Framing the Problem**
 
-In this short website, I would like to build a classification model that predict which role a player plated given their post-game data.
+In this short website, I would like to build a classification model that predicts which role a player plays given their post-game data.
 
 
-We will be using a csv file provided bt Oracle's Elixir. The dataset we are about to explore contain match data from LCS, LEC, LCK, and more from 2022. Previously, we worked on our exploratory data analysis on this dataset which can be found in the following link: [https://kanggunh.github.io/LeagueOfLegends/](https://kanggunh.github.io/LeagueOfLegends/)
+We will be using a csv file provided by Oracle's Elixir. The dataset we are about to explore contains match data from LCS, LEC, LCK, and more from 2022. Previously, we worked on our exploratory data analysis on this dataset which can be found in the following link: [https://kanggunh.github.io/LeagueOfLegends/](https://kanggunh.github.io/LeagueOfLegends/)
 
 There are 5 roles in this game, which are top-lane, jungle, support, mid-lane, bot-lane. We want to predict one of these five using post-game data. Accordingly, we need to build a classifier that performs multiclass classification. 
 
-To evaluate our model, we will be using accuracy test. Accuracy test works as our metric of evaluation since we have evenly distrubuted classes. Every game, each team as 5 roles from the 5 mentioned above. This means that our roles are evenly distrubuted.
+To evaluate our model, we will be using an accuracy test. The accuracy test works as our metric of evaluation since we have evenly distributed classes. Every game, each team has 5 roles from the 5 mentioned above. This means that our roles are evenly distributed.
 
-At the time of prediction, we would not know the champion that the player selected since lot of the champions has the designated role. We would also not know the player username. We would only have post-game stats such as kills, death, assist, damage, etc. to predict what role the player played.
+At the time of prediction, we would not know the champion that the player selected since a lot of the champions have the designated role. We would also not know the player's username. We would only have post-game stats such as kills, death, assists, damage, etc. to predict what role the player played.
 
 ---
 
@@ -53,16 +53,16 @@ Here is the general idea for why we chose these features.
 - **'monsterkills':** jungle usually takes all monsters and support almost never takes any
 - **'damagetakenperminute':** usually top-laners can take the most damage, resulting in higher damage taken per minute, and bot-laners usually take significant less
 
-With these features introduced, we made sure that there was no missing values. When assessing the missingness of our cleaned data with the columns that we need, we are able to see that we have 10 missing values for the columns 'visionscore', 'monsterkills', 'damagetakenperminute', and 'wardsplaced'. If we look at the match with gameid **8479-8479_game_1**, we are able to see that all of the missing values are from the 10 players of this match. Therefore, without doing any missingness permutation test for this on this data set, we are able to conclude that it is missing at random. Since there is only 10 rows of missing values out of 124500 rows, we will use mean imputation to fill the missing values. This will preserved the mean of the observed data.
+With these features introduced, we made sure that there was no missing values. When assessing the missingness of our cleaned data with the columns that we need, we are able to see that we have 10 missing values for the columns 'visionscore', 'monsterkills', 'damagetakenperminute', and 'wardsplaced'. If we look at the match with gameid **8479-8479_game_1**, we are able to see that all of the missing values are from the 10 players of this match. Therefore, without doing any missingness permutation test for this on this data set, we are able to conclude that it is missing at random. Since there are only 10 rows of missing values out of 124500 rows, we will use mean imputation to fill the missing values. This will preserve the mean of the observed data.
 
 ### **Modeling Pipeline**
-We kept the two features from the baseline model binarized. Then we chose to binarize two more features, 'earned gpm' and 'visionscore'. These two was specifcally binarized so that it accounts for different stats that are more relevent to the roles we want to predict. The rest of the features were passed as is. 
+We kept the two features from the baseline model binarized. Then we chose to binarize two more features, 'earned gpm' and 'visionscore'. These two were specifically binarized so that it account for different stats that are more relevent to the roles we want to predict. The rest of the features were passed as is. 
 
-For this final model, we kept our modeling algorithm the same as before. We are going to use decision tree classifier. However this time we wanted to figure out the best hyperparameters of this model. We used GridSearchCV from sklearn to do this. Our hyperparameters were the 'threshold' of each individual Binarizer,'max_depth' of the decision tree, and 'criterion' of the decision tree. 
+For this final model, we kept our modeling algorithm the same as before. We are going to use decision tree classifier. However, this time we wanted to figure out the best hyperparameters of this model. We used GridSearchCV from sklearn to do this. Our hyperparameters were the 'threshold' of each individual Binarizer,'max_depth' of the decision tree, and 'criterion' of the decision tree. 
 
-This process had some limitation for us with computing power on Jupyter Notebook. Since we have 6 hyperparameters and 5 folds to go through, it was taking too long if we put lot of values in this grid search. In order to address this run time issue, we chose the list values for threshold based on the mean of each feature. We experimented in increments (different intervals in increments) to allow GridSearch to run on our jupyter notebook within a reasonable amount of time.
+This process had some limitations for us with the computing power on the Jupyter Notebook. Since we have 6 hyperparameters and 5 folds to go through, it was taking too long if we put lot of values in this grid search. To address this run time issue, we chose the list values for the threshold based on the mean of each feature. We experimented in increments (different intervals in increments) to allow GridSearch to run on our jupyter notebook within a reasonable amount of time.
 
-Here is the final model pipeline with the hyperparameter we found through gridsearch.
+Here is the final model pipeline with the hyperparameter we found through grid-search.
 ```
 col_transformer = ColumnTransformer(
     transformers=[
@@ -78,9 +78,9 @@ pl_final = Pipeline([
     ('tree', DecisionTreeClassifier(max_depth=8, criterion='gini'))
 ])
 ```
-The accuracy of this model on training set and testing set was about 74.63% and 73.98% respectively. These accuracy of the two sets once again show that our model is not overfitting. We are able to generalize on unseen data. The inclusion of new features in this final model improved the accuracy by about 20%. 
+The accuracy of this model on the training set and the testing set was about 74.63% and 73.98% respectively. The accuracy of the two sets once again shows that our model is not overfitting. We are able to generalize on unseen data. The inclusion of new features in this final model improved the accuracy by about 20%. 
 
-We believe that our new features improved the performance of our model because they included the more characteristics of individual roles. The baseline model only focused on features that was more focused towards top-laners and support. This neglected the other roles. However, this final model includes other features that include all the other roles. For example, the feature 'earned gpm' helped to classify bot-laners since they tend to spend more time collecting gold during the game.
+We believe that our new features improved the performance of our model because they included the more characteristics of individual roles. The baseline model only focused on features that were more focused towards top-laners and support. This neglected the other roles. However, this final model includes other features that include all the other roles. For example, the feature 'earned gpm' helped to classify bot-laners since they tend to spend more time collecting gold during the game.
 
 ---
 # **Fairness Analysis**
@@ -92,7 +92,7 @@ The two groups are the following:
 
 For our evaluation, we will choose accuracy since the number of roles are equal to one another like mentioned previously. Computing the accuracy in each group, we get that 'monster-killer' gets an accuracy of 99.87% and 'non-monster-killer' get accuracy of 68.47%.
 
-We then performed a permutation test to see if the difference in accuracy is significant.
+We then performed a permutation test to see if the difference in accuracy was significant.
 - Null Hypothesis: The classifier's accuracy is the same for both monster-killer and non-monster-killer, and any differences are due to chance.
 - Alternative Hypothesis: The classifier's accuracy is higher for players who are monster-killer.
 - Test statistic: Difference in accuracy (monster-killer minus non-monster-killer)
